@@ -23,7 +23,7 @@ const DICT: Dict = {
 
   // Hero
   "hero.brand": { ID: "Perkebunan Teh Patuahwattee", EN: "Patuahwattee Tea Plantation" },
-  "hero.title": { ID: "Dari Dataran Tinggi ke Cangkirmu", EN: "From Highland to Your Cup" },
+  "hero.title": { ID: "Dari pucuk menuju secangkir teh nikmat", EN: "From the top to a cup of delicious tea" },
   "hero.desc": {
     ID: "Perkebunan teh bersejarah di ketinggian 1.500–2.200 mdpl. Dikelola oleh PT. Agri Wangi Sentosa dengan komitmen keberlanjutan dan kualitas terbaik.",
     EN: "A historic tea estate at 1,500–2,200 masl. Managed by PT. Agri Wangi Sentosa with a commitment to sustainability and quality.",
@@ -198,6 +198,13 @@ const DICT: Dict = {
   // Footer links
   "footer.links.terms": { ID: "Syarat & Ketentuan", EN: "Terms & Conditions" },
   "footer.links.privacy": { ID: "Kebijakan Privasi", EN: "Privacy Policy" },
+  
+  // Certifications
+  "certs.title": { ID: "Sertifikasi Kami", EN: "Our Certifications" },
+  "certs.halalMain": { ID: "Sertifikat Halal", EN: "Halal Certificate" },
+  "certs.halalAttachment": { ID: "Lampiran Halal", EN: "Halal Attachment" },
+  "certs.halalLabel": { ID: "Label Halal Indonesia", EN: "Halal Indonesia Label & QR" },
+  "certs.ra": { ID: "Rainforest Alliance", EN: "Rainforest Alliance Certificate" },
 }
 
 type I18nContext = {
