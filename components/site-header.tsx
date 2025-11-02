@@ -4,7 +4,9 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { useI18n } from "@/components/i18n-provider"
-import { useState, useEffect } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { createPortal } from "react-dom"
+import { Menu, X } from "lucide-react"
 
 const smoothScrollTo = (elementId: string) => {
   // Jika tidak di halaman utama, redirect ke halaman utama dengan anchor
@@ -24,7 +26,9 @@ const smoothScrollTo = (elementId: string) => {
 
 export function SiteHeader() {
   const [isLifeDropdownOpen, setIsLifeDropdownOpen] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
   const { t } = useI18n()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -42,16 +46,33 @@ export function SiteHeader() {
     }
   }, [isLifeDropdownOpen])
 
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+    const original = document.body.style.overflow
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = original || ''
+    }
+    return () => {
+      document.body.style.overflow = original || ''
+    }
+  }, [mobileOpen, mounted])
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-6 md:py-6">
         <Link href="/" className="flex items-center gap-3" aria-label="Beranda PT. Agri Wangi Sentosa">
           <img
             src="/images/agriwangi-logo.png"
             alt="Logo PT. Agri Wangi Sentosa"
             width={180}
             height={55}
-            className="h-14 w-auto"
+            className="h-10 w-auto md:h-14"
           />
           <span className="sr-only">PT. Agri Wangi Sentosa</span>
         </Link>
@@ -120,16 +141,56 @@ export function SiteHeader() {
           </button>
         </nav>
 
-        <div className="hidden md:flex items-center gap-4">
-          <LanguageSwitcher />
-          <Button
-            onClick={() => smoothScrollTo('contact')}
-            aria-label="Hubungi Kami"
+        <div className="flex items-center gap-3">
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden inline-flex items-center justify-center rounded-md border p-2 hover:bg-accent"
+            aria-label="Open menu"
+            onClick={() => setMobileOpen(true)}
           >
-            {t("header.cta.contact")}
-          </Button>
+            <Menu className="h-5 w-5" />
+          </button>
+
+          {/* Desktop actions */}
+          <div className="hidden md:flex items-center gap-4">
+            <LanguageSwitcher />
+            <Button
+              onClick={() => smoothScrollTo('contact')}
+              aria-label="Hubungi Kami"
+            >
+              {t("header.cta.contact")}
+            </Button>
+          </div>
         </div>
       </div>
+      {/* Mobile slide-over menu via portal to body to avoid header clipping/filters */}
+      {mounted && mobileOpen && createPortal(
+        <div className="md:hidden fixed inset-0 z-[100]">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setMobileOpen(false)} />
+          <div className="absolute right-0 top-0 h-full w-4/5 max-w-xs bg-background shadow-2xl border-l p-4 flex flex-col gap-4 transition-transform duration-300 translate-x-0">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Menu</span>
+              <button aria-label="Close menu" onClick={() => setMobileOpen(false)} className="p-2 rounded-md hover:bg-accent">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <LanguageSwitcher />
+            <nav className="flex flex-col gap-2">
+              <button onClick={() => { smoothScrollTo('about'); setMobileOpen(false) }} className="text-base text-left px-1.5 py-2 hover:bg-accent rounded-md">{t("header.nav.about")}</button>
+              <button onClick={() => { smoothScrollTo('plantation'); setMobileOpen(false) }} className="text-base text-left px-1.5 py-2 hover:bg-accent rounded-md">{t("header.nav.plantation")}</button>
+              <button onClick={() => { smoothScrollTo('factories'); setMobileOpen(false) }} className="text-base text-left px-1.5 py-2 hover:bg-accent rounded-md">{t("header.nav.factories")}</button>
+              <button onClick={() => { smoothScrollTo('life'); setMobileOpen(false) }} className="text-base text-left px-1.5 py-2 hover:bg-accent rounded-md">{t("header.nav.life")}</button>
+              <button onClick={() => { smoothScrollTo('products'); setMobileOpen(false) }} className="text-base text-left px-1.5 py-2 hover:bg-accent rounded-md">{t("header.nav.products")}</button>
+              <button onClick={() => { smoothScrollTo('contact'); setMobileOpen(false) }} className="text-base text-left px-1.5 py-2 hover:bg-accent rounded-md">{t("header.nav.contact")}</button>
+            </nav>
+            <div className="mt-2 border-t pt-3 flex flex-col gap-2">
+              <Button onClick={() => { smoothScrollTo('products'); setMobileOpen(false) }}>{t("hero.cta.products")}</Button>
+              <Button variant="outline" onClick={() => { smoothScrollTo('contact'); setMobileOpen(false) }}>{t("hero.cta.contact")}</Button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </header>
   )
 }
