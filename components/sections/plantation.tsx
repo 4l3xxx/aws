@@ -33,9 +33,13 @@ export function Plantation() {
                 <div className="rounded-lg border bg-background p-3">
                   <AspectRatio ratio={16 / 9}>
                     <img
-                      src="/peta/luas_kebun.png"
+                      src="/Peta/luas_kebun.png"
                       alt={t("plantation.map.alt")}
                       className="h-full w-full rounded-md object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        target.src = "/peta-sementara-dinonaktifkan.jpg"
+                      }}
                     />
                   </AspectRatio>
                   <ul className="mt-3 grid grid-cols-1 gap-2 text-xs text-muted-foreground sm:grid-cols-3">

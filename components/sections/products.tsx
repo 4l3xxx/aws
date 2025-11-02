@@ -18,6 +18,15 @@ type Product = {
     temp: string
     time: string
   }
+  i18n?: {
+    EN?: {
+      subtitle?: string
+      description?: string
+      highlights?: string[]
+      origin?: string
+      processing?: string
+    }
+  }
 }
 
 const PRODUCTS: Product[] = [
@@ -36,6 +45,19 @@ const PRODUCTS: Product[] = [
     origin: "Patuahwattee, Sumatera Barat (±1.200 mdpl)",
     processing: "Withering ringan, pengeringan lambat, tanpa oksidasi",
     brew: { temp: "75-80°C", time: "2-3 menit" },
+    i18n: {
+      EN: {
+        description:
+          "Hand-picked from the youngest buds and minimally processed to preserve a delicate floral aroma and smooth taste.",
+        highlights: [
+          "Selected young buds",
+          "Floral aroma, light body",
+          "Lower caffeine",
+        ],
+        origin: "Patuahwattee, West Sumatra (~1,200 masl)",
+        processing: "Light withering, slow drying, no oxidation",
+      },
+    },
   },
   {
     title: "Black Tea",
@@ -52,6 +74,19 @@ const PRODUCTS: Product[] = [
     origin: "Patuahwattee, Sumatera Barat (±1.200 mdpl)",
     processing: "Penggulungan, oksidasi penuh, pengeringan",
     brew: { temp: "90-95°C", time: "3-4 menit" },
+    i18n: {
+      EN: {
+        description:
+          "Black tea with a bold flavor and deep liquor. Suitable for premium blends or straight serving.",
+        highlights: [
+          "Orthodox whole leaf & CTC",
+          "Strong body, brisk, malty",
+          "Stable for blending",
+        ],
+        origin: "Patuahwattee, West Sumatra (~1,200 masl)",
+        processing: "Rolling, full oxidation, drying",
+      },
+    },
   },
   {
     title: "Green Tea",
@@ -68,6 +103,20 @@ const PRODUCTS: Product[] = [
     origin: "Patuahwattee, Sumatera Barat (±1.200 mdpl)",
     processing: "Fixing (pan/steam) untuk hentikan oksidasi, pengeringan",
     brew: { temp: "75-85°C", time: "2-3 menit" },
+    i18n: {
+      EN: {
+        subtitle: "Fresh green",
+        description:
+          "Fresh green tea with vegetal character and gentle sweetness. Processed to retain chlorophyll and antioxidants.",
+        highlights: [
+          "Fresh, grassy, slight umami",
+          "Rich in antioxidants",
+          "Comfortable for daily drinking",
+        ],
+        origin: "Patuahwattee, West Sumatra (~1,200 masl)",
+        processing: "Fixing (pan/steam) to stop oxidation, drying",
+      },
+    },
   },
   {
     title: "Yellow Tea",
@@ -84,6 +133,20 @@ const PRODUCTS: Product[] = [
     origin: "Patuahwattee, Sumatera Barat (±1.200 mdpl)",
     processing: "Fixing ringan, wrapping (menyudut), pengeringan",
     brew: { temp: "80–85°C", time: "2–3 menit" },
+    i18n: {
+      EN: {
+        subtitle: "Distinctive selection",
+        description:
+          "A rare style with a gentle wrapping step that yields a soft, clean cup and a clear golden liquor.",
+        highlights: [
+          "Soft and clean",
+          "Sweet golden aroma",
+          "Limited production",
+        ],
+        origin: "Patuahwattee, West Sumatra (~1,200 masl)",
+        processing: "Light fixing, wrapping, drying",
+      },
+    },
   },
   {
     title: "Matcha Tea",
@@ -100,6 +163,20 @@ const PRODUCTS: Product[] = [
     origin: "Patuahwattee, Sumatera Barat (~1.200 mdpl)",
     processing: "Shading pra-panen, steaming, pengeringan, penggilingan batu",
     brew: { temp: "70-80°C", time: "Whisk 20-30 detik" },
+    i18n: {
+      EN: {
+        subtitle: "Premium green tea powder",
+        description:
+          "Finely milled from quality green tea leaves, delivering gentle umami with a creamy texture.",
+        highlights: [
+          "Premium grade for culinary & beverages",
+          "Bright green color, umami taste",
+          "Ideal for latte, pastry, ceremonial",
+        ],
+        origin: "Patuahwattee, West Sumatra (~1,200 masl)",
+        processing: "Pre-harvest shading, steaming, drying, stone milling",
+      },
+    },
   },
 ]
 
@@ -131,8 +208,16 @@ export function Products() {
   )
 }
 
-function ProductCard({ title, subtitle, imageSrc, category, description, highlights, origin, processing, brew }: Product) {
-  const { t } = useI18n()
+function ProductCard({ title, subtitle, imageSrc, category, description, highlights, origin, processing, brew, i18n }: Product) {
+  const { t, lang } = useI18n()
+
+  const resolved = {
+    subtitle: lang === 'EN' ? (i18n?.EN?.subtitle ?? subtitle) : subtitle,
+    description: lang === 'EN' ? (i18n?.EN?.description ?? description) : description,
+    highlights: lang === 'EN' ? (i18n?.EN?.highlights ?? highlights) : highlights,
+    origin: lang === 'EN' ? (i18n?.EN?.origin ?? origin) : origin,
+    processing: lang === 'EN' ? (i18n?.EN?.processing ?? processing) : processing,
+  }
   return (
     <article className="overflow-hidden rounded-lg border bg-background hover-card">
       <img
@@ -144,7 +229,7 @@ function ProductCard({ title, subtitle, imageSrc, category, description, highlig
       />
       <div className="p-4">
         <h3 className="text-base font-medium">{title}</h3>
-        <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{resolved.subtitle}</p>
         <div className="mt-3">
           <Dialog>
             <DialogTrigger asChild>
@@ -171,11 +256,11 @@ function ProductCard({ title, subtitle, imageSrc, category, description, highlig
                   />
                 </div>
                 <div className="space-y-3 text-sm text-muted-foreground">
-                  <p className="text-foreground/90">{description}</p>
+                  <p className="text-foreground/90">{resolved.description}</p>
                   <div>
                     <p className="text-xs uppercase tracking-wide text-foreground/60">{t("products.advantages")}</p>
                     <ul className="mt-1 list-disc space-y-1 pl-5">
-                      {highlights.map((h, i) => (
+                      {resolved.highlights.map((h, i) => (
                         <li key={i}>{h}</li>
                       ))}
                     </ul>
@@ -183,11 +268,11 @@ function ProductCard({ title, subtitle, imageSrc, category, description, highlig
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <p className="text-xs uppercase tracking-wide text-foreground/60">{t("products.origin")}</p>
-                      <p>{origin}</p>
+                      <p>{resolved.origin}</p>
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-wide text-foreground/60">{t("products.process")}</p>
-                      <p>{processing}</p>
+                      <p>{resolved.processing}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
