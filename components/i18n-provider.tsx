@@ -155,6 +155,7 @@ const DICT: Dict = {
   "contact.form.placeholder.email": { ID: "Masukkan email aktif", EN: "Email Address" },
   "contact.form.placeholder.message": { ID: "Tuliskan pesan atau pertanyaan Anda di sini", EN: "Your Message" },
   "contact.hours.value": { ID: "Senin - Jumat, 08:00 - 17:00 WIB", EN: "Mon - Fri, 08:00 - 17:00 WIB" },
+  "contact.map.open": { ID: "Lihat peta lebih besar", EN: "View larger map" },
 
   // Plantation map & details
   "plantation.zoneData": { ID: "Zona & Data", EN: "Zones & Data" },

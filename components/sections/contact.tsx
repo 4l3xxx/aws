@@ -22,6 +22,18 @@ export function Contact() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const { toast } = useToast()
+  const envLat = process.env.NEXT_PUBLIC_MAPS_LAT
+  const envLng = process.env.NEXT_PUBLIC_MAPS_LNG
+  const hasLatLng = !!envLat && !!envLng
+  const baseFromCoords = hasLatLng
+    ? `https://www.google.com/maps?q=${envLat},${envLng}`
+    : `https://www.google.com/maps?q=-7.034,107.495`
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY
+  const embedFromKey = apiKey && hasLatLng
+    ? `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${envLat},${envLng}&zoom=16`
+    : undefined
+  const MAPS_EMBED = process.env.NEXT_PUBLIC_MAPS_EMBED_SRC || embedFromKey || `${baseFromCoords}&z=16&output=embed`
+  const MAPS_LINK = process.env.NEXT_PUBLIC_MAPS_LINK || baseFromCoords
 
   const copyAddress = useCallback(async () => {
     try {
@@ -181,14 +193,24 @@ export function Contact() {
 
             <div className="mt-6 overflow-hidden rounded-lg border">
               <AspectRatio ratio={16 / 9}>
-                <iframe
-                  title="Lokasi PT. Agri Wangi Sentosa"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.078739794138!2d107.495!3d-7.034!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68f9875ef0b28b%3A0xabcdef123456789!2sKebun%20Teh%20Patuha!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
-                  className="h-full w-full"
-                  loading="lazy"
-                  allowFullScreen
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
+                <div className="relative h-full w-full">
+                  <iframe
+                    title="Lokasi PT. Agri Wangi Sentosa"
+                    src={MAPS_EMBED}
+                    className="absolute inset-0 h-full w-full"
+                    style={{ background: 'transparent' }}
+                    loading="lazy"
+                    allowFullScreen
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                  <div className="absolute left-3 top-3">
+                    <Button asChild size="sm" className="bg-[#28a745] text-white hover:bg-[#23923c] shadow-md">
+                      <a href={MAPS_LINK} target="_blank" rel="noopener noreferrer">
+                        {t("contact.map.open")}
+                      </a>
+                    </Button>
+                  </div>
+                </div>
               </AspectRatio>
             </div>
           </div>
