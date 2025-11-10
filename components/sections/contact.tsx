@@ -118,7 +118,8 @@ export function Contact() {
         <h2 className="text-2xl font-semibold">{t("contact.title")}</h2>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <div className="rounded-xl border bg-white p-6 shadow-sm">
+          {/* Kolom informasi tetap tampil penuh saat form dinonaktifkan */}
+          <div className="rounded-xl border bg-white p-6 shadow-sm lg:col-span-2">
             <h3 className="text-lg font-semibold text-foreground">{t("contact.info")}</h3>
             <p className="mt-1 text-sm text-muted-foreground">{t("contact.info.desc")}</p>
 
@@ -191,92 +192,98 @@ export function Contact() {
               </AccordionItem>
             </Accordion>
 
-            <div className="mt-6 overflow-hidden rounded-lg border">
-              <AspectRatio ratio={16 / 9}>
-                <div className="relative h-full w-full">
-                  <iframe
-                    title="Lokasi PT. Agri Wangi Sentosa"
-                    src={MAPS_EMBED}
-                    className="absolute inset-0 h-full w-full"
-                    style={{ background: 'transparent' }}
-                    loading="lazy"
-                    allowFullScreen
-                    referrerPolicy="no-referrer-when-downgrade"
-                  />
-                  <div className="absolute left-3 top-3">
-                    <Button asChild size="sm" className="bg-[#28a745] text-white hover:bg-[#23923c] shadow-md">
-                      <a href={MAPS_LINK} target="_blank" rel="noopener noreferrer">
-                        {t("contact.map.open")}
-                      </a>
-                    </Button>
+            {/* Peta dinonaktifkan sementara */}
+            {false && (
+              <div className="mt-6 overflow-hidden rounded-lg border">
+                <AspectRatio ratio={16 / 9}>
+                  <div className="relative h-full w-full">
+                    <iframe
+                      title="Lokasi PT. Agri Wangi Sentosa"
+                      src={MAPS_EMBED}
+                      className="absolute inset-0 h-full w-full"
+                      style={{ background: 'transparent' }}
+                      loading="lazy"
+                      allowFullScreen
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                    <div className="absolute left-3 top-3">
+                      <Button asChild size="sm" className="bg-[#28a745] text-white hover:bg-[#23923c] shadow-md">
+                        <a href={MAPS_LINK} target="_blank" rel="noopener noreferrer">
+                          {t("contact.map.open")}
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </AspectRatio>
+              </div>
+            )}
+          </div>
+
+          {/* Bagian "Hubungi Kami" (form) dinonaktifkan sementara */}
+          {false && (
+            <div className="rounded-xl border bg-white p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-foreground">{t("contact.form.title")}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{t("contact.form.desc")}</p>
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  const formData = new FormData(e.currentTarget)
+                  sendEmail(formData)
+                }}
+                className="mt-6 space-y-4"
+                aria-label="Form kontak"
+              >
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="grid gap-1.5">
+                    <label htmlFor="name" className="text-sm font-medium text-muted-foreground">
+                      {t("contact.form.name")}
+                    </label>
+                    <Input id="name" name="name" placeholder={t("contact.form.placeholder.name")} required />
+                  </div>
+                  <div className="grid gap-1.5">
+                    <label htmlFor="email" className="text-sm font-medium text-muted-foreground">
+                      {t("contact.email")}
+                    </label>
+                    <Input id="email" name="email" type="email" placeholder={t("contact.form.placeholder.email")} required />
+                  </div>
+                  <div className="md:col-span-2 grid gap-1.5">
+                    <label htmlFor="message" className="text-sm font-medium text-muted-foreground">
+                      {t("contact.form.message")}
+                    </label>
+                    <Textarea id="message" name="message" placeholder={t("contact.form.placeholder.message")} required />
                   </div>
                 </div>
-              </AspectRatio>
-            </div>
-          </div>
 
-          <div className="rounded-xl border bg-white p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-foreground">{t("contact.form.title")}</h3>
-            <p className="mt-1 text-sm text-muted-foreground">{t("contact.form.desc")}</p>
+                {errorMessage && (
+                  <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                    {errorMessage}
+                  </div>
+                )}
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                const formData = new FormData(e.currentTarget)
-                sendEmail(formData)
-              }}
-              className="mt-6 space-y-4"
-              aria-label="Form kontak"
-            >
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="grid gap-1.5">
-                  <label htmlFor="name" className="text-sm font-medium text-muted-foreground">
-                    {t("contact.form.name")}
-                  </label>
-                  <Input id="name" name="name" placeholder={t("contact.form.placeholder.name")} required />
+                {successMessage && (
+                  <div className="rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700">
+                    {successMessage}
+                  </div>
+                )}
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button
+                    type="submit"
+                    size="lg"
+                    disabled={status === "sending"}
+                    className="bg-[#28a745] text-white hover:bg-[#23923c] focus-visible:ring-[#28a745]"
+                  >
+                    {status === "sending" ? t("contact.form.sending") : t("contact.form.send")}
+                  </Button>
                 </div>
-                <div className="grid gap-1.5">
-                  <label htmlFor="email" className="text-sm font-medium text-muted-foreground">
-                    {t("contact.email")}
-                  </label>
-                  <Input id="email" name="email" type="email" placeholder={t("contact.form.placeholder.email")} required />
-                </div>
-                <div className="md:col-span-2 grid gap-1.5">
-                  <label htmlFor="message" className="text-sm font-medium text-muted-foreground">
-                    {t("contact.form.message")}
-                  </label>
-                  <Textarea id="message" name="message" placeholder={t("contact.form.placeholder.message")} required />
-                </div>
+              </form>
+
+              <div className="mt-6 rounded-md border bg-muted/40 p-3 text-sm text-muted-foreground">
+                <p>Kami berusaha menjawab setiap pesan dalam waktu 1 hari kerja.</p>
               </div>
-
-              {errorMessage && (
-                <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                  {errorMessage}
-                </div>
-              )}
-
-              {successMessage && (
-                <div className="rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700">
-                  {successMessage}
-                </div>
-              )}
-
-              <div className="flex flex-wrap items-center gap-3">
-                <Button
-                  type="submit"
-                  size="lg"
-                  disabled={status === "sending"}
-                  className="bg-[#28a745] text-white hover:bg-[#23923c] focus-visible:ring-[#28a745]"
-                >
-                  {status === "sending" ? t("contact.form.sending") : t("contact.form.send")}
-                </Button>
-              </div>
-            </form>
-
-            <div className="mt-6 rounded-md border bg-muted/40 p-3 text-sm text-muted-foreground">
-              <p>Kami berusaha menjawab setiap pesan dalam waktu 1 hari kerja.</p>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
